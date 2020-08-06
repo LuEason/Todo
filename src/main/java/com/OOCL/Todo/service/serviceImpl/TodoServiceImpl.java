@@ -1,5 +1,7 @@
 package com.OOCL.Todo.service.serviceImpl;
 
+import com.OOCL.Todo.exception.NoSuchDataException;
+import com.OOCL.Todo.exception.NotTheSameIDException;
 import com.OOCL.Todo.model.Todo;
 import com.OOCL.Todo.repository.TodoRepository;
 import com.OOCL.Todo.service.TodoService;
@@ -10,7 +12,7 @@ import java.util.List;
 
 @Service
 public class TodoServiceImpl implements TodoService {
-    private TodoRepository todoRepository;
+    private final TodoRepository todoRepository;
 
     public TodoServiceImpl(TodoRepository todoRepository) {
         this.todoRepository = todoRepository;
@@ -24,10 +26,16 @@ public class TodoServiceImpl implements TodoService {
         return todoRepository.save(todo);
     }
 
-    public Todo updateTodo(Integer id, Todo todo) {
-        Todo sourceTodo = todoRepository.findById(id).orElse(null);
-        BeanUtils.copyProperties(todo, sourceTodo);
-        return todoRepository.save(sourceTodo);
+    public Todo updateTodo(Integer id, Todo sourceTodo) throws NotTheSameIDException, NoSuchDataException {
+        if (!sourceTodo.getId().equals(id)){
+            throw new NotTheSameIDException();
+        }
+        Todo targetTodo = todoRepository.findById(id).orElse(null);
+        if (targetTodo == null) {
+            throw new NoSuchDataException();
+        }
+        BeanUtils.copyProperties(sourceTodo, targetTodo);
+        return todoRepository.save(targetTodo);
     }
 
     public boolean deleteById(Integer id) {

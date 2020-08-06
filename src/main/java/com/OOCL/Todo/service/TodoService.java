@@ -1,7 +1,8 @@
 package com.OOCL.Todo.service;
 
+import com.OOCL.Todo.exception.NoSuchDataException;
+import com.OOCL.Todo.exception.NotTheSameIDException;
 import com.OOCL.Todo.model.Todo;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ public interface TodoService {
 
     Todo insertTodo(Todo todo);
 
-    Todo updateTodo(Integer id, Todo todo);
+    Todo updateTodo(Integer id, Todo todo) throws NotTheSameIDException, NoSuchDataException;
 
     boolean deleteById(Integer id);
 }

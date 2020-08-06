@@ -1,5 +1,7 @@
 package com.OOCL.Todo.controller;
 
+import com.OOCL.Todo.exception.NoSuchDataException;
+import com.OOCL.Todo.exception.NotTheSameIDException;
 import com.OOCL.Todo.model.Todo;
 import com.OOCL.Todo.service.TodoService;
 import org.springframework.http.HttpStatus;
@@ -29,7 +31,7 @@ public class TodoController {
     }
 
     @PutMapping("/{id}")
-    public Todo updateTodo(@PathVariable int id, @RequestBody Todo todo) {
+    public Todo updateTodo(@PathVariable int id, @RequestBody Todo todo) throws NoSuchDataException, NotTheSameIDException {
         return todoService.updateTodo(id, todo);
     }
 
