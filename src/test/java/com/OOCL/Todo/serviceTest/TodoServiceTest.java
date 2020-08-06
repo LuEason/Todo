@@ -47,4 +47,19 @@ public class TodoServiceTest {
         //then
         assertEquals(3, todos.size());
     }
+
+    @Test
+    void should_return_inserted_todo_when_call_insertTodo_given_todo() {
+        //given
+        Todo todo = new Todo("text", "UNDONE");
+        Todo insertedTodo = new Todo("text", "UNDONE");
+        insertedTodo.setId(1);
+        when(mockedTodoRepository.save(todo)).thenReturn(insertedTodo);
+
+        //when
+        Todo returnedTodo = todoService.insertTodo(todo);
+
+        //then
+        assertEquals(insertedTodo, returnedTodo);
+    }
 }
