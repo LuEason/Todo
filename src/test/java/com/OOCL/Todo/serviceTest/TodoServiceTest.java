@@ -9,14 +9,12 @@ import com.OOCL.Todo.service.serviceImpl.TodoServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 public class TodoServiceTest {
@@ -114,5 +112,32 @@ public class TodoServiceTest {
 
         //then
         assertEquals(targetTodo, updatedTodo);
+    }
+
+    @Test
+    void should_throw_NoSuchDataException_when_deleteById_given_id() {
+        //given
+        int id = 1;
+        when(mockedTodoRepository.findById(id)).thenReturn(Optional.empty());
+
+        //when
+        Exception exception = assertThrows(NoSuchDataException.class, () -> todoService.deleteById(id));
+
+        //then
+        assertEquals(NoSuchDataException.class, exception.getClass());
+    }
+
+    @Test
+    void should_delete_todo_when_deleteById_given_id() throws NoSuchDataException {
+        //given
+        int id = 1;
+        when(mockedTodoRepository.findById(id)).thenReturn(Optional.of(new Todo()));
+
+        //when
+        boolean isDelete = todoService.deleteById(id);
+
+        //then
+        assertTrue(isDelete);
+        Mockito.verify(mockedTodoRepository).deleteById(id);
     }
 }
