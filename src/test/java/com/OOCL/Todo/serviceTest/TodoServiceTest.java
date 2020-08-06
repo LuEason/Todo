@@ -1,5 +1,7 @@
 package com.OOCL.Todo.serviceTest;
 
+import com.OOCL.Todo.exception.NoSuchDataException;
+import com.OOCL.Todo.exception.NotTheSameIDException;
 import com.OOCL.Todo.model.Todo;
 import com.OOCL.Todo.repository.TodoRepository;
 import com.OOCL.Todo.service.TodoService;
@@ -7,11 +9,14 @@ import com.OOCL.Todo.service.serviceImpl.TodoServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.BeanUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 public class TodoServiceTest {
@@ -61,5 +66,53 @@ public class TodoServiceTest {
 
         //then
         assertEquals(insertedTodo, returnedTodo);
+    }
+
+    @Test
+    void should_throw_NotTheSameIDException_when_updateTodo_given_id_and_sourceTodo() {
+        //given
+        int id = 1;
+        Todo sourceTodo = new Todo();
+        sourceTodo.setId(2);
+
+        //when
+        Exception exception = assertThrows(NotTheSameIDException.class, () -> todoService.updateTodo(id, sourceTodo));
+
+        //then
+        assertEquals(NotTheSameIDException.class, exception.getClass());
+    }
+
+    @Test
+    void should_throw_NoSuchDataException_when_updateTodo_given_id_and_sourceTodo() {
+        //given
+        int id = 1;
+        Todo sourceTodo = new Todo();
+        sourceTodo.setId(1);
+        when(mockedTodoRepository.findById(id)).thenReturn(Optional.empty());
+
+        //when
+        Exception exception = assertThrows(NoSuchDataException.class, () -> todoService.updateTodo(id, sourceTodo));
+
+        //then
+        assertEquals(NoSuchDataException.class, exception.getClass());
+    }
+
+    @Test
+    void should_update_todo_when_updateTodo_given_id_and_sourceTodo() throws NoSuchDataException, NotTheSameIDException {
+        //given
+        int id = 1;
+        Todo sourceTodo = new Todo("text1", "DONE");
+        sourceTodo.setId(1);
+        Todo targetTodo = new Todo("text1", "UNDONE");
+        targetTodo.setId(1);
+        when(mockedTodoRepository.findById(id)).thenReturn(Optional.of(targetTodo));
+        targetTodo.setStatus("DONE");
+        when(mockedTodoRepository.save(targetTodo)).thenReturn(targetTodo);
+
+        //when
+        Todo updatedTodo = todoService.updateTodo(id, sourceTodo);
+
+        //then
+        assertEquals(targetTodo, updatedTodo);
     }
 }
