@@ -13,5 +13,5 @@ public interface TodoService {
 
     Todo updateTodo(Integer id, Todo todo) throws NotTheSameIDException, NoSuchDataException;
 
-    boolean deleteById(Integer id);
+    boolean deleteById(Integer id) throws NoSuchDataException;
 }

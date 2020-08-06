@@ -36,7 +36,7 @@ public class TodoController {
     }
 
     @DeleteMapping("/{id}")
-    public boolean deleteTodo(@PathVariable int id) {
+    public boolean deleteTodo(@PathVariable int id) throws NoSuchDataException {
         return todoService.deleteById(id);
     }
 }

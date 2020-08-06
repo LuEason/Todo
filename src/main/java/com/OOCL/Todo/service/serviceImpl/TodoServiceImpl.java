@@ -38,8 +38,12 @@ public class TodoServiceImpl implements TodoService {
         return todoRepository.save(targetTodo);
     }
 
-    public boolean deleteById(Integer id) {
+    public boolean deleteById(Integer id) throws NoSuchDataException {
+        Todo targetTodo = todoRepository.findById(id).orElse(null);
+        if (targetTodo == null) {
+            throw new NoSuchDataException();
+        }
         todoRepository.deleteById(id);
-        return !todoRepository.findById(id).isPresent();
+        return true;
     }
 }
